@@ -1,5 +1,7 @@
 import scrapy
 import json
+from ScrapyTest.items import HouseItem
+import logging
 
 class LianjiaSprider(scrapy.Spider):
     name='LianjiaSpider'
@@ -27,23 +29,32 @@ class LianjiaSprider(scrapy.Spider):
                 yield scrapy.Request(url = link, callback=self.parse)
 
     def parse(self, response):
-        houses=response.css('li.LOGCLICKDATA')
+        houses = response.css('li.LOGCLICKDATA')
         for house in houses:
+            id = house.css('.img::attr(data-housecode)').extract_first()
+
             title = house.css('.title a::text').extract_first()
             housingEstate = house.css('.houseInfo a::text').extract_first()
 
-            features = house.css('.houseInfo::text').extract()
-            structure = features[0]
-            size = features[1]
-            direction = features[2]
-            if len(features)>= 4:
-                decoration = features[3]
-            if len(features)>= 5:
-                elevator = features[4]
+            features = house.css('.houseInfo')[0].css('div::text').extract()
+            incr = 0;
+            if len(features) >= 6:
+                incr = 1
 
-            positions = house.css('.positionInfo::text').extract()
+            structure = features[0+incr]
+            size = features[1+incr]
+            direction = features[2+incr]
+            decoration = ""
+            if len(features)-incr >= 4:
+                decoration = features[3+incr]
+            elevator = ""
+            if len(features)-incr >= 5:
+                elevator = features[4+incr]
+
+            positions = house.css('.positionInfo')[0].css('div::text').extract()
             floor = positions[0]
-            if len(positions)>= 2:
+            age = ""
+            if len(positions) >= 2:
                 age = positions[1]
 
             area = house.css('.positionInfo a::text').extract_first()
@@ -52,31 +63,19 @@ class LianjiaSprider(scrapy.Spider):
 
             unitprice = house.css('.unitPrice span::text').extract_first()
 
+            item = HouseItem()
+            item['id'] = id
+            item['title'] = title
+            item['housingEstate'] = housingEstate
+            item['structure'] = structure
+            item['size'] = size
+            item['direction'] = direction
+            item['decoration'] = decoration
+            item['elevator'] = elevator
+            item['floor'] = floor
+            item['age'] = age
+            item['area'] = area
+            item['price'] = price
+            item['unitprice'] = unitprice
 
-            fileName = 'LianjiaHouse.txt'
-            f = open(fileName,'a+',encoding="utf-8")
-            f.write(title)
-            f.write('\t')
-            f.write(housingEstate)
-            f.write('\t')
-            f.write(structure)
-            f.write('\t')
-            f.write(size)
-            f.write('\t')
-            f.write(direction)
-            f.write('\t')
-            f.write(decoration)
-            f.write('\t')
-            f.write(elevator)
-            f.write('\t')
-            f.write(floor)
-            f.write('\t')
-            f.write(age)
-            f.write('\t')
-            f.write(area)
-            f.write('\t')
-            f.write(price)
-            f.write('\t')
-            f.write(unitprice)
-            f.write('\n')
-            f.close()
+            yield item

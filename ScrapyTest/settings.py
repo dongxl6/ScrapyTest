@@ -64,9 +64,9 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'ScrapyTest.pipelines.ScrapytestPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'ScrapyTest.pipelines.WriteTextToFilePipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -90,4 +90,4 @@ ROBOTSTXT_OBEY = False
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 LOG_FILE = "LianjiaSpider.log"
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "INFO"
