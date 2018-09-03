@@ -20,7 +20,13 @@ class LJChengjiaoSpider(scrapy.Spider):
     def parseArea(self,response):
         areaLinks = response.xpath('//div[@data-role="ershoufang"]/div[2]/a/@href').extract()
         for link in areaLinks:
-            yield scrapy.Request(url = response.urljoin(link), callback=self.parsePage)
+            yield scrapy.Request(url = response.urljoin(link), callback=self.parseFilter)
+
+    def parseFilter(self,response):
+        for i in range(8):
+            for j in range(8):
+                filterLink = response.url+'p'+str(i+1)+'a'+str(j+1)+'/'
+                yield scrapy.Request(url=filterLink, callback=self.parsePage)
 
     def parsePage(self,response):
         pageInfoStr = response.css('.house-lst-page-box::attr(page-data)') .extract_first()
