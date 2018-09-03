@@ -8,7 +8,7 @@ import json
 
 class WriteTextToFilePipeline(object):
     def __init__(self):
-        self.file = open('LianjiaHouse.json','wb')
+        self.file = open('LianjiaHouse_CJ.json','wb')
 
     def process_item(self, item, spider):
         jsontext = json.dumps(dict(item), ensure_ascii=False) + "\n"
